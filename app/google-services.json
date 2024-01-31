@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "608853877592",
+    "project_id": "bityarn-21004",
+    "storage_bucket": "bityarn-21004.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:608853877592:android:887d9a7298f02da415bb2d",
+        "android_client_info": {
+          "package_name": "com.example.bityarn"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyD9thKcZ1pz7QyO5_yVVXHXoF2c6bqXfig"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
