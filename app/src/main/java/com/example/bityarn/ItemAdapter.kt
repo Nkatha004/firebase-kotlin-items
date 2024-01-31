@@ -11,9 +11,12 @@ import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import android.widget.Filter
 import android.widget.ImageView
+import android.widget.Toast
+import com.google.firebase.database.DatabaseReference
+import com.google.firebase.database.FirebaseDatabase
 import java.util.Locale
 
-class ItemAdapter(private val context: Context, private val itemList: List<Item>) :
+class ItemAdapter(private val context: Context, private val itemList: MutableList<Item>) :
     RecyclerView.Adapter<ItemAdapter.ViewHolder>(), Filterable {
 
     private var filteredList: List<Item> = itemList
@@ -23,6 +26,7 @@ class ItemAdapter(private val context: Context, private val itemList: List<Item>
         val nameTextView: TextView = itemView.findViewById(R.id.nameTextView)
         private val editIcon: ImageView = itemView.findViewById(R.id.editIcon)
         private val viewIcon: ImageView = itemView.findViewById(R.id.viewIcon)
+        private val deleteIcon: ImageView = itemView.findViewById(R.id.deleteIcon)
 
         fun bind(item: Item) {
             idTextView.text = item.id.toString()
@@ -35,6 +39,10 @@ class ItemAdapter(private val context: Context, private val itemList: List<Item>
 
             viewIcon.setOnClickListener {
                 showView(item)
+            }
+
+            deleteIcon.setOnClickListener {
+                deleteItem(item)
             }
         }
 
@@ -117,4 +125,30 @@ class ItemAdapter(private val context: Context, private val itemList: List<Item>
         val alertDialog = alertDialogBuilder.create()
         alertDialog.show()
     }
+
+    private fun deleteItem(item: Item) {
+        val id = item.id
+        val database = FirebaseDatabase.getInstance().reference.child("items")
+        val itemRefToDelete: DatabaseReference = database.child("item$id")
+        System.out.println(itemRefToDelete)
+
+        itemRefToDelete.removeValue().addOnCompleteListener { task ->
+            if (task.isSuccessful) {
+                // Remove the item from the local list and notify the adapter
+                val position = itemList.indexOf(item)
+                if (position != -1) {
+                    itemList.removeAt(position)
+                    notifyItemRemoved(position)
+                }
+                // Show a toast
+                val toast = Toast.makeText(context, "Item has been deleted", Toast.LENGTH_SHORT)
+                toast.show()
+            } else {
+                // Handle the deletion failure
+                val toast = Toast.makeText(context, "Failed to deleted", Toast.LENGTH_SHORT)
+                toast.show()
+            }
+        }
+    }
+
 }

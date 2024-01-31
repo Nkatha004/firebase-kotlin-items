@@ -49,6 +49,15 @@
                     android:src="@drawable/edit_pencil"
                     android:contentDescription="Edit Item"
                     android:paddingRight="10dp"/>
+
+                <ImageView
+                    android:id="@+id/deleteIcon"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="right"
+                    android:src="@drawable/delete_bin"
+                    android:contentDescription="Delete Item"
+                    android:paddingRight="10dp"/>
             </LinearLayout>
 
             <LinearLayout
@@ -61,6 +70,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="ID: "
+                    android:textSize="25sp"
                     android:layout_marginRight="50dp"
                     android:layout_marginLeft="10dp"
                     android:padding="10dp"/>

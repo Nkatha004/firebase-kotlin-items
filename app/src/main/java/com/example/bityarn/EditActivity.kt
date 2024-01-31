@@ -6,7 +6,6 @@ import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
-import android.view.Gravity
 import android.view.LayoutInflater
 import android.widget.AdapterView
 import android.widget.ArrayAdapter
@@ -111,7 +110,6 @@ class EditActivity : AppCompatActivity() {
             databaseReference.child("item${id}").updateChildren(updatedItem)
 
             val toast = Toast.makeText(applicationContext, "Update successful", Toast.LENGTH_SHORT)
-            toast.setGravity(Gravity.CENTER, 0, 0)
             toast.show()
 
             showEditData(updatedItem as Map<String, Any>)
