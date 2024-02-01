@@ -2,7 +2,6 @@
 <LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="vertical"
@@ -11,7 +10,7 @@
     <TextView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:text="View Item"
+        android:text="@string/viewItem"
         android:textStyle="bold"
         android:textSize="24sp"
         android:gravity="center"
@@ -33,7 +32,7 @@
                 android:id="@+id/viewIdText"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="ID: "
+                android:text="@string/idLabel"
                 android:padding="10dp"
                 android:textSize="20sp"
                 android:layout_gravity="center"/>
@@ -42,7 +41,7 @@
                 android:id="@+id/viewNameText"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Name: "
+                android:text="@string/nameLabel"
                 android:textSize="20sp"
                 android:layout_gravity="center"
                 android:padding="10dp"/>
@@ -51,7 +50,7 @@
                 android:id="@+id/viewLocationText"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Location: "
+                android:text="@string/locationLabel"
                 android:textSize="20sp"
                 android:layout_gravity="center"
                 android:padding="10dp"/>
@@ -62,7 +61,7 @@
                 android:textSize="20sp"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
-                android:text="Type: "
+                android:text="@string/typeLabel"
                 android:padding="10dp"/>
 
             <TextView
@@ -70,7 +69,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:textSize="20sp"
-                android:text="Width: "
+                android:text="@string/widthLabel"
                 android:layout_gravity="center"
                 android:padding="10dp"/>
 
@@ -79,7 +78,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:textSize="20sp"
-                android:text="Height: "
+                android:text="@string/heightLabel"
                 android:layout_gravity="center"
                 android:padding="10dp"/>
 
@@ -89,7 +88,7 @@
                 android:layout_height="wrap_content"
                 android:textSize="20sp"
                 android:layout_gravity="center"
-                android:text="Length: "
+                android:text="@string/lengthLabel"
                 android:padding="10dp"/>
 
             <TextView
@@ -98,7 +97,7 @@
                 android:layout_height="wrap_content"
                 android:textSize="20sp"
                 android:layout_gravity="center"
-                android:text="Status: "
+                android:text="@string/statusLabel"
                 android:padding="10dp"/>
         </LinearLayout>
 

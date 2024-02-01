@@ -9,7 +9,4 @@ data class Item(
     val height: Int = 0,
     val length: Int = 0,
     val status: Int = 0
-) {
-    // Empty constructor for Firebase
-    constructor() : this(0, "", "", "", 0, 0, 0, 0)
-}
+)

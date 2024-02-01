@@ -14,7 +14,6 @@ import android.widget.ImageView
 import android.widget.Toast
 import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.FirebaseDatabase
-import java.util.Locale
 
 class ItemAdapter(private val context: Context, private val itemList: MutableList<Item>) :
     RecyclerView.Adapter<ItemAdapter.ViewHolder>(), Filterable {
@@ -22,27 +21,33 @@ class ItemAdapter(private val context: Context, private val itemList: MutableLis
     private var filteredList: List<Item> = itemList
 
     inner class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
-        val idTextView: TextView = itemView.findViewById(R.id.idTextView)
-        val nameTextView: TextView = itemView.findViewById(R.id.nameTextView)
+        private val idTextView: TextView = itemView.findViewById(R.id.idTextView)
+        private val nameTextView: TextView = itemView.findViewById(R.id.nameTextView)
         private val editIcon: ImageView = itemView.findViewById(R.id.editIcon)
         private val viewIcon: ImageView = itemView.findViewById(R.id.viewIcon)
         private val deleteIcon: ImageView = itemView.findViewById(R.id.deleteIcon)
 
         fun bind(item: Item) {
             idTextView.text = item.id.toString()
-            nameTextView.text = item.name.toUpperCase()
-            itemView.visibility=View.VISIBLE
+            nameTextView.text = item.name.uppercase()
 
-            editIcon.setOnClickListener {
-                showPopupMenu(item)
-            }
+            // Set the visibility of the views based on whether the item is filtered
+            if (isFilteredListEmpty()) {
+                itemView.visibility = View.GONE
+            } else {
+                itemView.visibility = View.VISIBLE
 
-            viewIcon.setOnClickListener {
-                showView(item)
-            }
+                editIcon.setOnClickListener {
+                    editItem(item)
+                }
 
-            deleteIcon.setOnClickListener {
-                deleteItem(item)
+                viewIcon.setOnClickListener {
+                    showView(item)
+                }
+
+                deleteIcon.setOnClickListener {
+                    deleteItem(item)
+                }
             }
         }
 
@@ -69,12 +74,12 @@ class ItemAdapter(private val context: Context, private val itemList: MutableLis
     override fun getFilter(): Filter {
         return object : Filter() {
             override fun performFiltering(constraint: CharSequence?): FilterResults {
-                val query = constraint?.toString()?.toLowerCase(Locale.getDefault()) ?: ""
+                val query = constraint?.toString()?.lowercase() ?: ""
                 filteredList = if (query.isEmpty()) {
                     itemList
                 } else {
                     itemList.filter {
-                        it.name.toLowerCase(Locale.getDefault()).contains(query)
+                        it.name.lowercase().contains(query)
                     }
                 }
                 val results = FilterResults()
@@ -84,7 +89,7 @@ class ItemAdapter(private val context: Context, private val itemList: MutableLis
             }
 
             override fun publishResults(constraint: CharSequence?, results: FilterResults?) {
-                filteredList = results?.values as? List<Item> ?: emptyList()
+                filteredList = (results?.values as? List<Item>) ?: emptyList()
                 notifyDataSetChanged()
             }
         }
@@ -92,11 +97,11 @@ class ItemAdapter(private val context: Context, private val itemList: MutableLis
 
     override fun getItemCount() = itemList.size
 
-    fun isFilteredListEmpty(): Boolean {
+    private fun isFilteredListEmpty(): Boolean {
         return filteredList.isEmpty()
     }
 
-    private fun showPopupMenu(item: Item) {
+    private fun editItem(item: Item) {
         val intent = Intent(context, EditActivity::class.java)
         intent.putExtra("item", "$item")
         context.startActivity(intent)
@@ -115,36 +120,35 @@ class ItemAdapter(private val context: Context, private val itemList: MutableLis
         viewItems.findViewById<TextView>(R.id.viewWidthText).text="Width: ${item.width}"
         viewItems.findViewById<TextView>(R.id.viewHeightText).text="Height: ${item.height}"
 
+        // show a card view with all details for the selected item
         val alertDialogBuilder = AlertDialog.Builder(context)
         alertDialogBuilder.setView(viewItems)
-
         alertDialogBuilder.setPositiveButton("Done") { dialog, which ->
             dialog.dismiss()
         }
-
-        val alertDialog = alertDialogBuilder.create()
-        alertDialog.show()
+        alertDialogBuilder.create().show()
     }
 
     private fun deleteItem(item: Item) {
         val id = item.id
         val database = FirebaseDatabase.getInstance().reference.child("items")
         val itemRefToDelete: DatabaseReference = database.child("item$id")
-        System.out.println(itemRefToDelete)
 
+        //removes the item from db
         itemRefToDelete.removeValue().addOnCompleteListener { task ->
             if (task.isSuccessful) {
-                // Remove the item from the local list and notify the adapter
+                // Remove the item from the local list and notify the adapter to modify the interface alignment
                 val position = itemList.indexOf(item)
                 if (position != -1) {
                     itemList.removeAt(position)
                     notifyItemRemoved(position)
                 }
-                // Show a toast
+
+                //deletion successful
                 val toast = Toast.makeText(context, "Item has been deleted", Toast.LENGTH_SHORT)
                 toast.show()
             } else {
-                // Handle the deletion failure
+                // deletion failed
                 val toast = Toast.makeText(context, "Failed to deleted", Toast.LENGTH_SHORT)
                 toast.show()
             }

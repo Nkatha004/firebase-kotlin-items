@@ -1,3 +1,17 @@
 <resources>
     <string name="app_name">Bityarn</string>
+    <string name="save">save</string>
+
+    <string name="nameLabel">Name: </string>
+    <string name="idLabel">ID: </string>
+    <string name="locationLabel">Location: </string>
+    <string name="typeLabel">Type: </string>
+    <string name="widthLabel">Width: </string>
+    <string name="lengthLabel">Length: </string>
+    <string name="heightLabel">Height: </string>
+    <string name="statusLabel">Status: </string>
+
+    <string name="editItem">Edit Item</string>
+    <string name="deleteItem">Delete Item</string>
+    <string name="viewItem">View Item</string>
 </resources>

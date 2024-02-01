@@ -20,7 +20,9 @@ class EditActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_edit)
-        val item = intent.getStringExtra("item")
+
+        //Get the details of the item being passed
+        val item = intent.getStringExtra("item") //Item(id=10, name=name 10, location=location 10, type=type 10, width=1000, height=1000, length=1000, status=0)
 
         val keyValuePairs = item
             ?.substringAfter("(") // Remove "Item("
@@ -33,25 +35,20 @@ class EditActivity : AppCompatActivity() {
                 key.trim() to value.trim()
             }
 
-        val id = itemMap?.getValue("id")
+        // Create a spinner (select dropdown) with values(active and inactive)
         val spinner: Spinner = findViewById(R.id.spinner)
         val items = listOf("Active", "Inactive")
-
-        // Create an ArrayAdapter using the string array and a default spinner layout
         val adapter = ArrayAdapter(this, android.R.layout.simple_spinner_item, items)
-
-        // Specify the layout to use when the list of choices appears
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
-
-        // Apply the adapter to the spinner
         spinner.adapter = adapter
 
-        // Set a default selected value
+        // Set a default value for the status field that already exists (active or inactive)
         var spinnerValue = ""
         if(itemMap?.getValue("status") == "1") spinnerValue = "Active" else spinnerValue = "Inactive"
         val defaultIndex = items.indexOf(spinnerValue)
         spinner.setSelection(defaultIndex)
 
+        // populate the input fields with details specific to selected item
         findViewById<EditText>(R.id.editTextName).setText(itemMap?.getValue("name"))
         findViewById<EditText>(R.id.editTextType).setText(itemMap?.getValue("type"))
         findViewById<EditText>(R.id.editTextLocation).setText(itemMap?.getValue("location"))
@@ -68,40 +65,27 @@ class EditActivity : AppCompatActivity() {
                 id: Long
             ) {
                 val selectedItem = items[position]
-                // Handle the selected item
-                // For example, you can use selectedItem to determine if it's "Active" or "Inactive"
-                when (selectedItem) {
-                    "Active" -> {
-                        spinnerValue = "1"
-                    }
+                if (selectedItem == "Active") spinnerValue = "1" else spinnerValue = "0"
 
-                    "Inactive" -> {
-                        spinnerValue = "0"
-                    }
-                }
             }
-            override fun onNothingSelected(parent: AdapterView<*>?) {
-                // Handle case where nothing is selected
-            }
+            override fun onNothingSelected(parent: AdapterView<*>?) {}
         }
 
+        //save the edits to firebase on button click
         findViewById<Button>(R.id.buttonSave).setOnClickListener{
-            val editedName = findViewById<EditText>(R.id.editTextName).text.toString()
-            val editedLocation = findViewById<EditText>(R.id.editTextLocation).text.toString()
-            val editedType = findViewById<EditText>(R.id.editTextType).text.toString()
-            val editedWidth = findViewById<EditText>(R.id.editTextWidth).text.toString().toInt()
-            val editedHeight = findViewById<EditText>(R.id.editTextHeight).text.toString().toInt()
-            val editedLength = findViewById<EditText>(R.id.editTextLength).text.toString().toInt()
+
+            //get the ID of the item being updated
+            val id = itemMap?.getValue("id")
 
             // Create a map to update the existing item
             val updatedItem = mapOf(
                 "id" to id?.toInt(),
-                "name" to editedName,
-                "location" to editedLocation,
-                "type" to editedType,
-                "width" to editedWidth,
-                "height" to editedHeight,
-                "length" to editedLength,
+                "name" to findViewById<EditText>(R.id.editTextName).text.toString(),
+                "location" to findViewById<EditText>(R.id.editTextLocation).text.toString(),
+                "type" to findViewById<EditText>(R.id.editTextType).text.toString(),
+                "width" to findViewById<EditText>(R.id.editTextWidth).text.toString().toInt(),
+                "height" to findViewById<EditText>(R.id.editTextHeight).text.toString().toInt(),
+                "length" to findViewById<EditText>(R.id.editTextLength).text.toString().toInt(),
                 "status" to spinnerValue.toInt(),
             )
 
@@ -109,57 +93,52 @@ class EditActivity : AppCompatActivity() {
             val databaseReference = FirebaseDatabase.getInstance().getReference("items")
             databaseReference.child("item${id}").updateChildren(updatedItem)
 
+            //update successful
             val toast = Toast.makeText(applicationContext, "Update successful", Toast.LENGTH_SHORT)
             toast.show()
 
+            //display a card view with the updated data
             showEditData(updatedItem as Map<String, Any>)
         }
     }
 
     private fun showEditData(updatedItem:  Map<String, Any>) {
-        val inflater = LayoutInflater.from(this)
-        val viewItems = inflater.inflate(R.layout.view_form, null)
-        val id = updatedItem["id"]
-        val name = updatedItem["name"]
-        val type = updatedItem["type"]
-        val location = updatedItem["location"]
-        val length = updatedItem["length"]
-        val height = updatedItem["height"]
-        val width = updatedItem["width"]
-        val status = updatedItem["status"]
 
-        viewItems.findViewById<TextView>(R.id.viewIdText).text="ID: ${id}"
-        viewItems.findViewById<TextView>(R.id.viewNameText).text="Name: ${name}"
-        viewItems.findViewById<TextView>(R.id.viewTypeText).text="Type: ${type}"
-        viewItems.findViewById<TextView>(R.id.viewLocationText).text="Location: ${location}"
-        viewItems.findViewById<TextView>(R.id.viewStatusText).text="Status: "+ if(status == 1) "Active" else "Inactive"
-        viewItems.findViewById<TextView>(R.id.viewLengthText).text="Length: ${length}"
-        viewItems.findViewById<TextView>(R.id.viewWidthText).text="Width: ${width}"
-        viewItems.findViewById<TextView>(R.id.viewHeightText).text="Height: ${height}"
-
+        //show a successful update popup
         val successDialogBuilder = AlertDialog.Builder(this)
         successDialogBuilder.setMessage("Update successful!")
-
-        // Create the AlertDialog
         val successDialog = successDialogBuilder.create()
         successDialog.show()
+
+        // populate the view card for showing the updated item
+        val viewItems = LayoutInflater.from(this).inflate(R.layout.view_form, null)
+        viewItems.findViewById<TextView>(R.id.viewIdText).text="ID: " + updatedItem["id"]
+        viewItems.findViewById<TextView>(R.id.viewNameText).text="Name: "+ updatedItem["name"]
+        viewItems.findViewById<TextView>(R.id.viewTypeText).text="Type: " + updatedItem["type"]
+        viewItems.findViewById<TextView>(R.id.viewLocationText).text="Location: " + updatedItem["location"]
+        viewItems.findViewById<TextView>(R.id.viewStatusText).text="Status: "+ if(updatedItem["status"] == 1) "Active" else "Inactive"
+        viewItems.findViewById<TextView>(R.id.viewLengthText).text="Length: " + updatedItem["length"]
+        viewItems.findViewById<TextView>(R.id.viewWidthText).text="Width: " + updatedItem["width"]
+        viewItems.findViewById<TextView>(R.id.viewHeightText).text="Height: " + updatedItem["height"]
 
         Handler(Looper.getMainLooper()).postDelayed({
             successDialog.dismiss()
 
-            // Delay for an additional 30 seconds before performing another action
+            // Delay before showing the view of the updated item
             Handler(Looper.getMainLooper()).postDelayed({
+
+                //show the updated item on a view card
                 val alertDialogBuilder = AlertDialog.Builder(this)
                 alertDialogBuilder.setView(viewItems)
+
+                //redirect back to the home page with all the items
                 alertDialogBuilder.setPositiveButton("OK") { dialog, which ->
                     val intent = Intent(this, MainActivity::class.java)
                     this.startActivity(intent)
                 }
+                alertDialogBuilder.create().show()
 
-                val alertDialog = alertDialogBuilder.create()
-                alertDialog.show()
-
-            }, 500)
-        }, 1000)
+            }, 500) // delay for 0.5 seconds after the success popup and show the card view of the updated item
+        }, 1000) // show update success for 1 second
     }
 }
